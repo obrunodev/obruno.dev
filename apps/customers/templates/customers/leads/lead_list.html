@@ -1,23 +1,114 @@
 {% extends "base.html" %}
 
-{% block title %}Leads cadastrados{% endblock title %}
+{% block title %}Leads Cadastrados{% endblock title %}
 
 {% block content %}
 
-    <h1>Leads cadastrados</h1>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            
+            <h1 class="card-title mb-4">Leads Cadastrados ({{ leads.count }} leads)</h1>
 
-    <a href="{% url "customers:lead_create" %}">Novo lead</a>
+            <div class="row mb-4 align-items-center">
+                <div class="col-md-8">
+                    <form method="get" class="d-flex">
+                        <input
+                            type="text"
+                            name="q"
+                            class="form-control me-2"
+                            placeholder="Busque pelo nome da empresa, contato, nicho ou origem..."
+                            value="{{ request.GET.q }}">
+                        
+                        <button type="submit" class="btn btn-primary">Buscar</button>
+                        {% if request.GET.q %}
+                            <a href="{% url "customers:lead_list" %}" class="btn btn-outline-secondary ms-2">Limpar</a>
+                        {% endif %}
+                    </form>
+                </div>
+                
+                <div class="col-md-4 text-end">
+                    <a
+                        href="{% url "customers:lead_create" %}"
+                        class="btn btn-success">
+                        <i class="bi bi-plus-lg"></i> Cadastrar Novo Lead
+                    </a>
+                </div>
+            </div>
 
-    <ul>
-        {% for lead in leads %}
-            <li>
-                {{ lead }} -
-                <a href="{% url "customers:lead_update" lead.pk %}">Editar</a> -
-                <a href="{% url "customers:lead_delete" lead.pk %}">Excluir</a>
-            </li>
-        {% empty %}
-            <li>Nenhum lead cadastrado</li>
-        {% endfor %}
-    </ul>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Empresa/Contato</th>
+                            <th>Nicho</th>
+                            <th>Telefone/WhatsApp</th>
+                            <th>Origem</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for lead in leads %}
+                            <tr>
+                                <td>
+                                    <a href="{% url "customers:lead_detail" pk=lead.pk %}" class="text-dark fw-bold text-decoration-none">
+                                        {{ lead.company_name }}
+                                    </a>
+                                    {% if lead.contact_name %}
+                                        <small class="d-block text-muted">({{ lead.contact_name }})</small>
+                                    {% endif %}
+                                </td>
+                                
+                                <td>{{ lead.niche }}</td>
+                                
+                                <td>
+                                    {% if lead.phone_number %}
+                                        {{ lead.phone_number }}
+                                        {% if lead.has_whatsapp %}
+                                            <i class="bi bi-whatsapp text-success ms-1" title="Tem WhatsApp"></i>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                
+                                <td>{{ lead.lead_origin|default:"N/A" }}</td>
+                                
+                                <td class="text-center">
+                                    <span class="badge rounded-pill 
+                                        {% if lead.contact_status == 'closed' %}bg-success
+                                        {% elif lead.contact_status == 'proposal_sent' %}bg-info
+                                        {% elif lead.contact_status == 'unqualified' %}bg-secondary
+                                        {% elif lead.contact_status == 'new' %}bg-primary
+                                        {% else %}bg-warning text-dark
+                                        {% endif %}">
+                                        {{ lead.get_contact_status_display }}
+                                    </span>
+                                </td>
+                                
+                                <td class="text-center">
+                                    <a href="{% url "customers:lead_detail" pk=lead.pk %}" class="btn btn-sm btn-outline-dark me-1" title="Ver Detalhes">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url "customers:lead_update" pk=lead.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url "customers:lead_delete" pk=lead.pk %}" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td class="text-center text-muted py-4" colspan="6">
+                                    Nenhum lead encontrado com o filtro aplicado.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
 {% endblock content %}

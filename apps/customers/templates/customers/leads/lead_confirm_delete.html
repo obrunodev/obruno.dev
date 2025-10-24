@@ -1,14 +1,39 @@
 {% extends "base.html" %}
 
-{% block title %}Novo Lead{% endblock title %}
+{% block title %}Excluir Lead{% endblock title %}
 
 {% block content %}
 
-    <p>Tem certeza que deseja excluir o lead?</p>
-
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit">Excluir</button>
-    </form>
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-danger shadow-sm">
+                
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Confirmação de Exclusão</h5>
+                </div>
+                
+                <div class="card-body">
+                    <p class="lead">
+                        ⚠️ Você está prestes a <strong>excluir permanentemente</strong> este lead.
+                    </p>
+                    <p>
+                        Esta ação <strong>não pode ser desfeita</strong>. Tem certeza que deseja continuar?
+                    </p>
+                    
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="bi bi-trash"></i> Excluir Lead
+                        </button>
+                        
+                        <a href="{% url "customers:lead_list" %}" class="btn btn-secondary btn-lg ms-3">
+                            Cancelar
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock content %}

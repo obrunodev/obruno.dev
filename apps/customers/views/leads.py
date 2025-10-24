@@ -2,6 +2,7 @@ from apps.customers.forms import LeadForm
 from apps.customers.models import Lead
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -25,6 +26,14 @@ class LeadListView(LoginRequiredMixin, ListView):
     model = Lead
     template_name = 'customers/leads/lead_list.html'
     context_object_name = 'leads'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if q := self.request.GET.get('q'):
+            qs = qs.filter(
+                Q(company_name__icontains=q) | Q(contact_name__icontains=q)
+            )
+        return qs
 
 
 class LeadDetailView(LoginRequiredMixin, DetailView):

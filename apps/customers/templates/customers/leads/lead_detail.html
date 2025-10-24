@@ -1,9 +1,90 @@
 {% extends "base.html" %}
 
-{% block title %}Detalhes{% endblock title %}
+{% block title %}Detalhes do Lead: {{ lead.company_name }}{% endblock title %}
 
 {% block content %}
 
-    <h1>Detalhes</h1>
+    <div class="card shadow-sm mb-4">
+        
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-0">{{ lead.company_name }}</h1>
+            <div>
+                <a href="{% url "customers:lead_update" pk=lead.pk %}" class="btn btn-primary me-2">
+                    <i class="bi bi-pencil-square"></i> Editar
+                </a>
+                <a href="{% url "customers:lead_delete" pk=lead.pk %}" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Excluir
+                </a>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            
+            <h5 class="card-title mb-3">Informações Principais</h5>
+            
+            <div class="row">
+                
+                <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Status:</strong>
+                            <span class="badge 
+                                {% if lead.contact_status == 'new' %}bg-info 
+                                {% elif lead.contact_status == 'closed' %}bg-success 
+                                {% elif lead.contact_status == 'unqualified' %}bg-secondary 
+                                {% else %}bg-warning text-dark 
+                                {% endif %}">
+                                {{ lead.get_contact_status_display }}
+                            </span>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Contato:</strong> {{ lead.contact_name|default:"N/A" }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Nicho:</strong> {{ lead.niche }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Origem do Lead:</strong> {{ lead.lead_origin|default:"N/A" }}
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-6">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <strong>Telefone:</strong> {{ lead.phone_number|default:"N/A" }}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Tem Whatsapp?</strong> 
+                            {% if lead.has_whatsapp %}
+                                <span class="text-success"><i class="bi bi-check-circle-fill"></i> Sim</span>
+                            {% else %}
+                                <span class="text-danger"><i class="bi bi-x-circle-fill"></i> Não</span>
+                            {% endif %}
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Link do Site:</strong> 
+                            {% if lead.website_link %}
+                                <a href="{{ lead.website_link }}" target="_blank" class="card-link">{{ lead.website_link }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="mt-4 mb-3">
+            
+            <div class="text-muted small">
+                Criado em: {{ lead.created_at|date:"d/m/Y H:i" }} | Última Atualização: {{ lead.updated_at|date:"d/m/Y H:i" }}
+            </div>
+            
+        </div>
+    </div>
+    
+    <a href="{% url "customers:lead_list" %}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar para a Lista
+    </a>
 
 {% endblock content %}
