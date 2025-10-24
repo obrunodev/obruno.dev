@@ -4,7 +4,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 DEBUG = True
-ALLOWED_HOSTS = ['xwaqen.hospedagemelastica.com.br']
+ALLOWED_HOSTS = ['xwaqen.hospedagemelastica.com.br', 'localhost']
 CSRF_TRUSTED_ORIGINS = ['https://xwaqen.hospedagemelastica.com.br']
 
 INSTALLED_APPS = [
@@ -76,5 +76,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+LOGIN_URL = 'users:login'
+LOGIN_REDIRECT_URL = 'customers:lead_list'
+LOGOUT_REDIRECT_URL = 'customers:lead_list'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
