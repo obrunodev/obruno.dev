@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Leads cadastrados{% endblock title %}
+
+{% block content %}
+
+    <h1>Leads cadastrados</h1>
+
+    <a href="{% url "customers:lead_create" %}">Novo lead</a>
+
+    <ul>
+        {% for lead in leads %}
+            <li>
+                {{ lead }} -
+                <a href="{% url "customers:lead_update" lead.pk %}">Editar</a> -
+                <a href="{% url "customers:lead_delete" lead.pk %}">Excluir</a>
+            </li>
+        {% empty %}
+            <li>Nenhum lead cadastrado</li>
+        {% endfor %}
+    </ul>
+
+{% endblock content %}
