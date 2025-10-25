@@ -65,7 +65,9 @@
                                     {% if lead.phone_number %}
                                         {{ lead.phone_number }}
                                         {% if lead.has_whatsapp %}
-                                            <i class="bi bi-whatsapp text-success ms-1" title="Tem WhatsApp"></i>
+                                            <a href="https://wa.me/{{ lead.phone_number }}" target="_blank">
+                                                <i class="bi bi-whatsapp text-success ms-1" title="Tem WhatsApp"></i>
+                                            </a>
                                         {% endif %}
                                     {% else %}
                                         <span class="text-muted">N/A</span>
@@ -87,15 +89,34 @@
                                 </td>
                                 
                                 <td class="text-center">
-                                    <a href="{% url "customers:lead_detail" pk=lead.pk %}" class="btn btn-sm btn-outline-dark me-1" title="Ver Detalhes">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <a href="{% url "customers:lead_update" pk=lead.pk %}" class="btn btn-sm btn-outline-primary me-1" title="Editar">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <a href="{% url "customers:lead_delete" pk=lead.pk %}" class="btn btn-sm btn-outline-danger" title="Excluir">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
+                                    <div class="dropdown dropstart">
+                                        <button class="btn btn-sm btn-outline-secondary" 
+                                                type="button" 
+                                                data-bs-toggle="dropdown" 
+                                                aria-expanded="false" 
+                                                title="Ações">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item" href="{% url "customers:lead_detail" pk=lead.pk %}">
+                                                    <i class="bi bi-eye me-2"></i> Ver Detalhes
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="{% url "customers:lead_update" pk=lead.pk %}">
+                                                    <i class="bi bi-pencil me-2"></i> Editar
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="{% url "customers:lead_delete" pk=lead.pk %}">
+                                                    <i class="bi bi-trash me-2"></i> Excluir
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </td>
                             </tr>
                         {% empty %}

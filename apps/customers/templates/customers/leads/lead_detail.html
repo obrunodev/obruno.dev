@@ -57,7 +57,9 @@
                         <li class="list-group-item">
                             <strong>Tem Whatsapp?</strong> 
                             {% if lead.has_whatsapp %}
-                                <span class="text-success"><i class="bi bi-check-circle-fill"></i> Sim</span>
+                                <a href="https://wa.me/{{ lead.phone_number }}" target="_blank">
+                                    <span class="text-success"><i class="bi bi-check-circle-fill"></i> Sim</span>
+                                </a>
                             {% else %}
                                 <span class="text-danger"><i class="bi bi-x-circle-fill"></i> Não</span>
                             {% endif %}
