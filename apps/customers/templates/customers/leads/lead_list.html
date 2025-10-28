@@ -8,26 +8,52 @@
         <div class="card-body">
             <h1 class="card-title mb-4">Leads Cadastrados ({{ leads.count }} leads)</h1>
             <div class="row mb-4 align-items-center">
-                <div class="col-md-8">
-                    <form method="get" class="d-flex">
+    
+                {# Coluna de Busca e Filtros (ocupa 8/12 no desktop, 12/12 no mobile) #}
+                <div class="col-lg-8 col-md-12">
+                    <form method="get" class="d-flex flex-wrap align-items-center gap-2">
+                        
+                        {# Campo Select para Status (Filtro 'f') #}
+                        <select name="f" class="form-select" style="max-width: 200px;">
+                            <option value="" {% if not request.GET.f %}selected{% endif %}>Todos os Status</option>
+                            {# Use as escolhas do seu modelo para popular as opções #}
+                            <option value="new" {% if request.GET.f == 'new' %}selected{% endif %}>Novo</option>
+                            <option value="pending" {% if request.GET.f == 'pending' %}selected{% endif %}>Pendente</option>
+                            <option value="attempting_contact" {% if request.GET.f == 'attempting_contact' %}selected{% endif %}>Tentativa de Contato</option>
+                            <option value="in_contact" {% if request.GET.f == 'in_contact' %}selected{% endif %}>Em Contato</option>
+                            <option value="qualified" {% if request.GET.f == 'qualified' %}selected{% endif %}>Qualificado</option>
+                            <option value="development" {% if request.GET.f == 'development' %}selected{% endif %}>Desenvolvimento / Prova</option>
+                            <option value="proposal_sent" {% if request.GET.f == 'proposal_sent' %}selected{% endif %}>Proposta Enviada</option>
+                            <option value="closed" {% if request.GET.f == 'closed' %}selected{% endif %}>Fechado (Cliente)</option>
+                            <option value="unqualified" {% if request.GET.f == 'unqualified' %}selected{% endif %}>Desqualificado</option>
+                        </select>
+
+                        {# Campo de Busca (Query 'q') - usa flex-grow-1 para ocupar o espaço restante #}
                         <input
                             type="text"
                             name="q"
-                            class="form-control me-2"
-                            placeholder="Busque pelo nome da empresa, contato, nicho ou origem..."
+                            class="form-control flex-grow-1"
+                            placeholder="Busque pelo nome da empresa, contato ou origem..."
                             value="{{ request.GET.q }}">
-                        <button type="submit" class="btn btn-primary">Buscar</button>
-                        {% if request.GET.q %}
-                            <a href="{% url "customers:lead_list" %}" class="btn btn-outline-secondary ms-2">Limpar</a>
+                        
+                        {# Botões de Ação #}
+                        <button type="submit" class="btn btn-primary">
+                            Buscar
+                        </button>
+                        
+                        {# O botão Limpar aparece se houver filtro 'q' OU filtro 'f' ativos #}
+                        {% if request.GET.q or request.GET.f %}
+                            <a href="{% url "customers:lead_list" %}" class="btn btn-outline-secondary">Limpar</a>
                         {% endif %}
                     </form>
                 </div>
                 
-                <div class="col-md-4 text-end">
+                {# Botão de Criar Lead (ocupa 4/12 no desktop, 12/12 no mobile) #}
+                <div class="col-lg-4 col-md-12 text-lg-end mt-md-2 mt-lg-0">
                     <a
                         href="{% url "customers:lead_create" %}"
-                        class="btn btn-success">
-                        <i class="bi bi-plus-lg"></i> Cadastrar Novo Lead
+                        class="btn btn-success w-100 w-lg-auto">
+                        Cadastrar Novo Lead
                     </a>
                 </div>
             </div>
@@ -123,6 +149,8 @@
                     </tbody>
                 </table>
             </div>
+
+            {% include "partials/pagination.html" %}
         </div>
     </div>
 

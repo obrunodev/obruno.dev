@@ -2,7 +2,7 @@ from apps.customers.forms import LeadForm
 from apps.customers.models import Lead
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
+from django.db.models import Q, Case, When, Value, IntegerField
 from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -13,6 +13,18 @@ from django.views.generic import (
 )
 
 SUCCESS_URL = reverse_lazy('customers:lead_list') 
+
+STATUS_ORDER = [
+    Lead.LeadStatusChoices.NEW,
+    Lead.LeadStatusChoices.PENDING,
+    Lead.LeadStatusChoices.ATTEMPTING_CONTACT,
+    Lead.LeadStatusChoices.IN_CONTACT,
+    Lead.LeadStatusChoices.QUALIFIED,
+    Lead.LeadStatusChoices.DEVELOPMENT,
+    Lead.LeadStatusChoices.PROPOSAL_SENT,
+    Lead.LeadStatusChoices.CLOSED,
+    Lead.LeadStatusChoices.UNQUALIFIED,
+]
 
 
 class LeadCreateView(LoginRequiredMixin, CreateView):
@@ -26,13 +38,34 @@ class LeadListView(LoginRequiredMixin, ListView):
     model = Lead
     template_name = 'customers/leads/lead_list.html'
     context_object_name = 'leads'
+    paginate_by = 20
 
     def get_queryset(self):
         qs = super().get_queryset()
+        
+        ordering_cases = [
+            When(contact_status=status_code, then=Value(index))
+            for index, status_code in enumerate(STATUS_ORDER)
+        ]
+        
+        qs = qs.annotate(
+            order_rank=Case(
+                *ordering_cases,
+                default=Value(len(STATUS_ORDER)),
+                output_field=IntegerField()
+            )
+        )
+        
+        qs = qs.order_by('order_rank', 'company_name')
+        
         if q := self.request.GET.get('q'):
             qs = qs.filter(
                 Q(company_name__icontains=q) | Q(contact_name__icontains=q)
             )
+        
+        if f := self.request.GET.get('f'):
+            qs = qs.filter(contact_status=f)
+        
         return qs
 
 
