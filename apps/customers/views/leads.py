@@ -22,6 +22,7 @@ STATUS_ORDER = [
     Lead.LeadStatusChoices.QUALIFIED,
     Lead.LeadStatusChoices.DEVELOPMENT,
     Lead.LeadStatusChoices.PROPOSAL_SENT,
+    Lead.LeadStatusChoices.ON_HOLD_SCHEDULED,
     Lead.LeadStatusChoices.CLOSED,
     Lead.LeadStatusChoices.UNQUALIFIED,
 ]

@@ -9,6 +9,7 @@ class Lead(BaseModel):
         NEW = 'new', 'Novo'  # Acabou de entrar
         PENDING = 'pending', 'Pendente' # Atribuído, aguardando 1º contato ou tentativa falha
         # PROSPECÇÃO
+        ON_HOLD_SCHEDULED = 'on_hold_scheduled', 'Em Espera (Agendado)'
         ATTEMPTING_CONTACT = 'attempting_contact', 'Tentativa de Contato' # Vendedor tentando ativamente
         IN_CONTACT = 'in_contact', 'Em Contato' # Conectado, conversando
         # QUALIFICAÇÃO/AVANÇO
@@ -53,6 +54,13 @@ class Lead(BaseModel):
         choices=LeadStatusChoices.choices,
         default=LeadStatusChoices.NEW
     )
+    observations = models.TextField('Observações', blank=True, null=True)
+    return_date = models.DateTimeField(
+        'Data/Hora de Retorno',
+        blank=True,
+        null=True,
+    )
+    
 
     class Meta:
         ordering = ('company_name',)

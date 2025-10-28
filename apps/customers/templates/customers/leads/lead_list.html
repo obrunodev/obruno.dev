@@ -8,15 +8,10 @@
         <div class="card-body">
             <h1 class="card-title mb-4">Leads Cadastrados ({{ leads.count }} leads)</h1>
             <div class="row mb-4 align-items-center">
-    
-                {# Coluna de Busca e Filtros (ocupa 8/12 no desktop, 12/12 no mobile) #}
                 <div class="col-lg-8 col-md-12">
                     <form method="get" class="d-flex flex-wrap align-items-center gap-2">
-                        
-                        {# Campo Select para Status (Filtro 'f') #}
                         <select name="f" class="form-select" style="max-width: 200px;">
                             <option value="" {% if not request.GET.f %}selected{% endif %}>Todos os Status</option>
-                            {# Use as escolhas do seu modelo para popular as opções #}
                             <option value="new" {% if request.GET.f == 'new' %}selected{% endif %}>Novo</option>
                             <option value="pending" {% if request.GET.f == 'pending' %}selected{% endif %}>Pendente</option>
                             <option value="attempting_contact" {% if request.GET.f == 'attempting_contact' %}selected{% endif %}>Tentativa de Contato</option>
@@ -28,7 +23,6 @@
                             <option value="unqualified" {% if request.GET.f == 'unqualified' %}selected{% endif %}>Desqualificado</option>
                         </select>
 
-                        {# Campo de Busca (Query 'q') - usa flex-grow-1 para ocupar o espaço restante #}
                         <input
                             type="text"
                             name="q"
@@ -36,19 +30,16 @@
                             placeholder="Busque pelo nome da empresa, contato ou origem..."
                             value="{{ request.GET.q }}">
                         
-                        {# Botões de Ação #}
                         <button type="submit" class="btn btn-primary">
                             Buscar
                         </button>
                         
-                        {# O botão Limpar aparece se houver filtro 'q' OU filtro 'f' ativos #}
                         {% if request.GET.q or request.GET.f %}
                             <a href="{% url "customers:lead_list" %}" class="btn btn-outline-secondary">Limpar</a>
                         {% endif %}
                     </form>
                 </div>
                 
-                {# Botão de Criar Lead (ocupa 4/12 no desktop, 12/12 no mobile) #}
                 <div class="col-lg-4 col-md-12 text-lg-end mt-md-2 mt-lg-0">
                     <a
                         href="{% url "customers:lead_create" %}"
@@ -111,14 +102,10 @@
                                         <button
                                             class="btn btn-sm btn-outline-secondary" 
                                             type="button" 
-                                            data-bs-toggle="dropdown" 
-                                            data-bs-boundary="viewport" 
-                                            data-bs-offset="0, 5" 
-                                            aria-expanded="false" 
-                                            title="Ações">
+                                            data-bs-toggle="dropdown">
                                             <i class="bi bi-three-dots-vertical"></i>
                                         </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
+                                        <ul class="dropdown-menu">
                                             <li>
                                                 <a class="dropdown-item" href="{% url "customers:lead_detail" pk=lead.pk %}">
                                                     <i class="bi bi-eye me-2"></i> Ver Detalhes
