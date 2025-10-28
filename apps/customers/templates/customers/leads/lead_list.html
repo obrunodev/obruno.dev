@@ -6,7 +6,23 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <h1 class="card-title mb-4">Leads Cadastrados ({{ leads.count }} leads)</h1>
+            <h1 class="card-title mb-4">Leads Cadastrados ({{ leads_count }} leads)</h1>
+            
+            <div class="mb-3 p-3 border rounded bg-light">
+                <h5 class="mb-2">Legenda dos Ícones:</h5>
+                    <p class="mb-1 mt-4">
+                        <i class="bi bi-whatsapp text-success me-1"></i>
+                        <strong>WhatsApp:</strong> O número de telefone possui WhatsApp.
+                    </p>
+                    <p class="mb-1">
+                        <i class="bi bi-globe text-info me-1"></i>
+                        <strong>Website:</strong> O lead possui um website cadastrado.
+                    </p>
+                    <p class="mb-1">
+                        <i class="bi bi-chat-left-dots text-dark me-1"></i>
+                        <strong>Observações:</strong> Existem observações cadastradas para este lead.
+                    </p>
+            </div>
             <div class="row mb-4 align-items-center">
                 <div class="col-lg-8 col-md-12">
                     <form method="get" class="d-flex flex-wrap align-items-center gap-2">
@@ -27,7 +43,7 @@
                             type="text"
                             name="q"
                             class="form-control flex-grow-1"
-                            placeholder="Busque pelo nome da empresa, contato ou origem..."
+                            placeholder="Busque pelo nome da empresa, contato ou nicho..."
                             value="{{ request.GET.q }}">
                         
                         <button type="submit" class="btn btn-primary">
@@ -55,8 +71,7 @@
                         <tr>
                             <th>Empresa/Contato</th>
                             <th>Nicho</th>
-                            <th>Telefone/WhatsApp</th>
-                            <th>Origem</th>
+                            <th>Links</th>
                             <th class="text-center">Status</th>
                             <th class="text-center">Ações</th>
                         </tr>
@@ -74,18 +89,23 @@
                                 </td>
                                 <td>{{ lead.niche }}</td>
                                 <td>
-                                    {% if lead.phone_number %}
-                                        {{ lead.phone_number }}
-                                        {% if lead.has_whatsapp %}
-                                            <a href="https://wa.me/{{ lead.phone_number }}" target="_blank">
-                                                <i class="bi bi-whatsapp text-success ms-1" title="Tem WhatsApp"></i>
-                                            </a>
-                                        {% endif %}
-                                    {% else %}
-                                        <span class="text-muted">N/A</span>
+                                    {% if lead.phone_number and lead.has_whatsapp %}
+                                        <a
+                                            href="https://wa.me/{{ lead.phone_number }}"
+                                            target="_blank"
+                                            class="text-decoration-none">
+                                            <i class="bi bi-whatsapp text-success ms-1" title="Tem WhatsApp"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% if lead.website_link %}
+                                        <a href="{{ lead.website_link }}" target="_blank" class="text-decoration-none">
+                                            <i class="bi bi-globe text-info ms-1" title="Tem Website"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% if lead.observations %}
+                                        <i class="bi bi-chat-left-dots text-dark ms-1" title="{{ lead.observations }}"></i>
                                     {% endif %}
                                 </td>
-                                <td>{{ lead.lead_origin|default:"N/A" }}</td>
                                 <td class="text-center">
                                     <span class="badge rounded-pill 
                                         {% if lead.contact_status == 'closed' %}bg-success

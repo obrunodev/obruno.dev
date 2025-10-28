@@ -61,13 +61,20 @@ class LeadListView(LoginRequiredMixin, ListView):
         
         if q := self.request.GET.get('q'):
             qs = qs.filter(
-                Q(company_name__icontains=q) | Q(contact_name__icontains=q)
+                Q(company_name__icontains=q) |
+                Q(contact_name__icontains=q) |
+                Q(niche__icontains=q)
             )
         
         if f := self.request.GET.get('f'):
             qs = qs.filter(contact_status=f)
         
         return qs
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['leads_count'] = Lead.objects.count()
+        return context
 
 
 class LeadDetailView(LoginRequiredMixin, DetailView):

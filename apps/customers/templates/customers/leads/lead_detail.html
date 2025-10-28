@@ -46,6 +46,9 @@
                         <li class="list-group-item">
                             <strong>Origem do Lead:</strong> {{ lead.lead_origin|default:"N/A" }}
                         </li>
+                        <li class="list-group-item">
+                            <strong>Observações:</strong> {{ lead.observations|linebreaks|default:"N/A" }}
+                        </li>
                     </ul>
                 </div>
                 
