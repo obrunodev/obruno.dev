@@ -1,6 +1,8 @@
 from apps.customers.forms import LeadForm
 from apps.customers.models import Lead
 
+from datetime import datetime, timedelta
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q, Case, When, Value, IntegerField
 from django.urls import reverse_lazy
@@ -73,6 +75,16 @@ class LeadListView(LoginRequiredMixin, ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        now = datetime.now()
+        five_days_from_now = now + timedelta(days=5)
+        leads_to_return = Lead.objects.filter(
+            return_date__gte=now,
+            return_date__lte=five_days_from_now,
+            contact_status=Lead.LeadStatusChoices.ON_HOLD_SCHEDULED,
+        )
+        context['leads_next_return'] = leads_to_return
+        
         context['leads_count'] = Lead.objects.count()
         return context
 

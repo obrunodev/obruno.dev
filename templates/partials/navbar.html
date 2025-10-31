@@ -28,7 +28,59 @@
                 </a>
             </div>
 
-            <div class="d-flex ms-auto">
+            <div class="d-flex ms-auto align-items-center">
+                
+                <!-- DROPDOWN DE NOTIFICAÇÕES DE RETORNO -->
+                <div class="dropdown me-3">
+                    <button class="btn btn-dark position-relative" type="button" 
+                            data-bs-toggle="dropdown" 
+                            aria-expanded="false"
+                            title="Leads para retorno nos próximos 5 dias">
+                        
+                        <i class="bi bi-bell fs-5"></i>
+                        
+                        {% if leads_next_return|length > 0 %}
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                {{ leads_next_return|length }}
+                                <span class="visually-hidden">Novos retornos</span>
+                            </span>
+                        {% endif %}
+                    </button>
+                    
+                    <ul class="dropdown-menu dropdown-menu-end shadow" style="min-width: 300px;">
+                        <h6 class="dropdown-header">Retornos Agendados (5 dias)</h6>
+                        {% for lead in leads_next_return %}
+                            {% with lead_date=lead.return_date|date:"Y-m-d" today_date=now|date:"Y-m-d" tomorrow_date=now|date:"Y-m-d"|add:"1" %}
+                                {% if lead_date == today_date or lead_date == tomorrow_date %}
+                                    <li class="bg-warning-subtle border-start border-3 border-danger">
+                                {% else %}
+                                    <li>
+                                {% endif %}
+                                
+                                <a class="dropdown-item d-flex justify-content-between align-items-start" 
+                                    href="{% url "customers:lead_detail" pk=lead.pk %}">
+                                    <div>
+                                        <strong>{{ lead.company_name }}</strong>
+                                        {% if lead.contact_name %}
+                                            <p class="mb-0 text-muted small">{{ lead.contact_name }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-end ms-3">
+                                        <span class="badge 
+                                            {% if lead_date == today_date %}bg-danger{% elif lead_date == tomorrow_date %}bg-primary{% else %}bg-secondary{% endif %}">
+                                            {{ lead.return_date|date:"d/m/Y" }}
+                                        </span>
+                                        <p class="mb-0 text-muted small">{{ lead.return_date|date:"H:i" }}</p>
+                                    </div>
+                                </a>
+                            </li>
+                            {% endwith %}
+                        {% empty %}
+                            <li><span class="dropdown-item text-muted fst-italic">Nenhum retorno pendente.</span></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
                 <div class="dropdown">
                     <button class="btn btn-outline-light dropdown-toggle" type="button" 
                             data-bs-toggle="dropdown" 

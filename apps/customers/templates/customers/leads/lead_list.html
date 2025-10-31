@@ -30,6 +30,7 @@
                             <option value="" {% if not request.GET.f %}selected{% endif %}>Todos os Status</option>
                             <option value="new" {% if request.GET.f == 'new' %}selected{% endif %}>Novo</option>
                             <option value="pending" {% if request.GET.f == 'pending' %}selected{% endif %}>Pendente</option>
+                            <option value="on_hold_scheduled" {% if request.GET.f == 'on_hold_scheduled' %}selected{% endif %}>Em espera (Agendado)</option>
                             <option value="attempting_contact" {% if request.GET.f == 'attempting_contact' %}selected{% endif %}>Tentativa de Contato</option>
                             <option value="in_contact" {% if request.GET.f == 'in_contact' %}selected{% endif %}>Em Contato</option>
                             <option value="qualified" {% if request.GET.f == 'qualified' %}selected{% endif %}>Qualificado</option>
@@ -104,6 +105,9 @@
                                     {% endif %}
                                     {% if lead.observations %}
                                         <i class="bi bi-chat-left-dots text-dark ms-1" title="{{ lead.observations }}"></i>
+                                    {% endif %}
+                                    {% if lead.contact_status == 'on_hold_scheduled' and lead.return_date %}
+                                        <i class="bi bi-calendar-date text-dark ms-1" title="{{ lead.return_date }}"></i>
                                     {% endif %}
                                 </td>
                                 <td class="text-center">
