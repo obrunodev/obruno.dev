@@ -1,1 +1,18 @@
 .table-responsive .dropdown .dropdown-menu { z-index: 1060 !important; }
+
+.copy-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: transparent;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.copy-btn:hover {
+    background: #0056b3;
+}

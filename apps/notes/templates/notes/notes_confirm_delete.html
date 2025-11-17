@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Excluir anotação{% endblock title %}
+
+{% block content %}
+    <div class="container my-5">
+        <div class="card p-4">
+            <div class="card-body text-center">
+                <h1 class="card-title display-5 mb-4">Tem certeza que deseja excluir?</h1>
+                <p class="card-text lead">A anotação **{{ note.title }}** será excluída permanentemente.</p>
+                <p class="text-danger mb-4">Essa ação não pode ser desfeita.</p>
+
+                <form method="post" class="d-grid gap-2 col-md-6 mx-auto">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-lg">Confirmar exclusão</button>
+                    <a href="{% url "notes:list" %}" class="btn btn-outline-secondary btn-lg">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

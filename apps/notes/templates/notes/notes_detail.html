@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% load render_md static %}
+
+{% block title %}{{ note.title }}{% endblock title %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static "vendors/codehilite/main.css" %}">
+
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-4">{{ note.title }}</h1>
+            <div class="d-flex">
+                <a href="{% url "notes:update" note.id %}" class="btn btn-outline-secondary me-2">Editar</a>
+                <a href="{% url "notes:delete" note.id %}" class="btn btn-outline-danger">Excluir</a>
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <div class="card-body">
+                <div class="markdown-content">
+                    {{ note.content|render_markdown }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <a href="{% url "notes:list" %}" class="btn btn-link">Voltar para a lista</a>
+        </div>
+    </div>
+
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll("pre").forEach(pre => {
+                let button = document.createElement("button");
+                button.innerText = "Copiar";
+                button.classList.add("copy-btn");
+                pre.style.position = "relative";
+        
+                pre.appendChild(button);
+        
+                button.addEventListener("click", () => {
+                    let code = pre.querySelector("code");
+                    if (code) {
+                        navigator.clipboard.writeText(code.innerText).then(() => {
+                            button.innerText = "Copiado!";
+                            setTimeout(() => button.innerText = "Copiar", 2000);
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock content %}
