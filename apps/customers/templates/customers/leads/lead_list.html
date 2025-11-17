@@ -3,170 +3,158 @@
 {% block title %}Leads Cadastrados{% endblock title %}
 
 {% block content %}
-
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h1 class="card-title mb-4">Leads Cadastrados ({{ leads_count }} leads)</h1>
-            
-            <div class="mb-3 p-3 border rounded bg-light">
-                <h5 class="mb-2">Legenda dos Ícones:</h5>
-                    <p class="mb-1 mt-4">
-                        <i class="bi bi-whatsapp text-success me-1"></i>
-                        <strong>WhatsApp:</strong> O número de telefone possui WhatsApp.
-                    </p>
-                    <p class="mb-1">
-                        <i class="bi bi-globe text-info me-1"></i>
-                        <strong>Website:</strong> O lead possui um website cadastrado.
-                    </p>
-                    <p class="mb-1">
-                        <i class="bi bi-chat-left-dots text-dark me-1"></i>
-                        <strong>Observações:</strong> Existem observações cadastradas para este lead.
-                    </p>
-                    <p class="mb-1">
-                        <i class="bi bi-calendar-date text-dark me-1"></i>
-                        <strong>Data de retorno:</strong> Este lead tem uma data de retorno agendada.
-                    </p>
-            </div>
-            <div class="row mb-4 align-items-center">
-                <div class="col-lg-8 col-md-12">
-                    <form method="get" class="d-flex flex-wrap align-items-center gap-2">
-                        <select name="f" class="form-select" style="max-width: 200px;">
-                            <option value="" {% if not request.GET.f %}selected{% endif %}>Todos os Status</option>
-                            <option value="new" {% if request.GET.f == 'new' %}selected{% endif %}>Novo</option>
-                            <option value="pending" {% if request.GET.f == 'pending' %}selected{% endif %}>Pendente</option>
-                            <option value="on_hold_scheduled" {% if request.GET.f == 'on_hold_scheduled' %}selected{% endif %}>Em espera (Agendado)</option>
-                            <option value="attempting_contact" {% if request.GET.f == 'attempting_contact' %}selected{% endif %}>Tentativa de Contato</option>
-                            <option value="in_contact" {% if request.GET.f == 'in_contact' %}selected{% endif %}>Em Contato</option>
-                            <option value="qualified" {% if request.GET.f == 'qualified' %}selected{% endif %}>Qualificado</option>
-                            <option value="development" {% if request.GET.f == 'development' %}selected{% endif %}>Desenvolvimento / Prova</option>
-                            <option value="proposal_sent" {% if request.GET.f == 'proposal_sent' %}selected{% endif %}>Proposta Enviada</option>
-                            <option value="closed" {% if request.GET.f == 'closed' %}selected{% endif %}>Fechado (Cliente)</option>
-                            <option value="unqualified" {% if request.GET.f == 'unqualified' %}selected{% endif %}>Desqualificado</option>
-                        </select>
-
-                        <input
-                            type="text"
-                            name="q"
-                            class="form-control flex-grow-1"
-                            placeholder="Busque pelo nome da empresa, contato ou nicho..."
-                            value="{{ request.GET.q }}">
-                        
-                        <button type="submit" class="btn btn-primary">
-                            Buscar
-                        </button>
-                        
-                        {% if request.GET.q or request.GET.f %}
-                            <a href="{% url "customers:lead_list" %}" class="btn btn-outline-secondary">Limpar</a>
-                        {% endif %}
-                    </form>
-                </div>
-                
-                <div class="col-lg-4 col-md-12 text-lg-end mt-md-2 mt-lg-0">
-                    <a
-                        href="{% url "customers:lead_create" %}"
-                        class="btn btn-success w-100 w-lg-auto">
-                        Cadastrar Novo Lead
-                    </a>
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-hover table-striped align-middle">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Empresa/Contato</th>
-                            <th>Nicho</th>
-                            <th>Links</th>
-                            <th class="text-center">Status</th>
-                            <th class="text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for lead in leads %}
-                            <tr>
-                                <td>
-                                    <a href="{% url "customers:lead_detail" pk=lead.pk %}" class="text-dark fw-bold text-decoration-none">
-                                        {{ lead.company_name }}
-                                    </a>
-                                    {% if lead.contact_name %}
-                                        <small class="d-block text-muted">({{ lead.contact_name }})</small>
-                                    {% endif %}
-                                </td>
-                                <td>{{ lead.niche }}</td>
-                                <td>
-                                    {% if lead.phone_number and lead.has_whatsapp %}
-                                        <a
-                                            href="https://wa.me/{{ lead.phone_number }}"
-                                            target="_blank"
-                                            class="text-decoration-none">
-                                            <i class="bi bi-whatsapp text-success ms-1" title="Tem WhatsApp"></i>
-                                        </a>
-                                    {% endif %}
-                                    {% if lead.website_link %}
-                                        <a href="{{ lead.website_link }}" target="_blank" class="text-decoration-none">
-                                            <i class="bi bi-globe text-info ms-1" title="Tem Website"></i>
-                                        </a>
-                                    {% endif %}
-                                    {% if lead.observations %}
-                                        <i class="bi bi-chat-left-dots text-dark ms-1" title="{{ lead.observations }}"></i>
-                                    {% endif %}
-                                    {% if lead.contact_status == 'on_hold_scheduled' and lead.return_date %}
-                                        <i class="bi bi-calendar-date text-dark ms-1" title="{{ lead.return_date }}"></i>
-                                    {% endif %}
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge rounded-pill 
-                                        {% if lead.contact_status == 'closed' %}bg-success
-                                        {% elif lead.contact_status == 'proposal_sent' %}bg-info
-                                        {% elif lead.contact_status == 'unqualified' %}bg-secondary
-                                        {% elif lead.contact_status == 'new' %}bg-primary
-                                        {% else %}bg-warning text-dark
-                                        {% endif %}">
-                                        {{ lead.get_contact_status_display }}
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <div class="dropdown dropstart">
-                                        <button
-                                            class="btn btn-sm btn-outline-secondary" 
-                                            type="button" 
-                                            data-bs-toggle="dropdown">
-                                            <i class="bi bi-three-dots-vertical"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a class="dropdown-item" href="{% url "customers:lead_detail" pk=lead.pk %}">
-                                                    <i class="bi bi-eye me-2"></i> Ver Detalhes
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item" href="{% url "customers:lead_update" pk=lead.pk %}">
-                                                    <i class="bi bi-pencil me-2"></i> Editar
-                                                </a>
-                                            </li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li>
-                                                <a class="dropdown-item text-danger" href="{% url "customers:lead_delete" pk=lead.pk %}">
-                                                    <i class="bi bi-trash me-2"></i> Excluir
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td class="text-center text-muted py-4" colspan="6">
-                                    Nenhum lead encontrado com o filtro aplicado.
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            {% include "partials/pagination.html" %}
+    <div class="my-4">
+        <h1 class="display-6 fw-light mb-2">Leads Cadastrados 
+            <span class="badge bg-dark rounded-pill">{{ leads_count }}</span>
+        </h1>
+        
+        <div class="mb-4 p-3 border-start border-3 border-dark bg-light">
+            <small class="text-muted d-block">
+                <i class="bi bi-whatsapp text-success me-1"></i> WhatsApp
+                | 
+                <i class="bi bi-globe text-info me-1"></i> Website
+                | 
+                <i class="bi bi-chat-left-dots text-dark me-1"></i> Observações
+                | 
+                <i class="bi bi-calendar-date text-dark me-1"></i> Retorno Agendado
+            </small>
         </div>
+
+        <div class="row mb-4 align-items-center g-2">
+            <div class="col-lg-9 col-md-12 order-md-2 order-lg-1">
+                <form method="get" class="d-flex flex-wrap align-items-center gap-2">
+                    <select name="f" class="form-select border-dark" style="max-width: 200px;">
+                        <option value="" {% if not request.GET.f %}selected{% endif %}>Todos os Status</option>
+                        <option value="new" {% if request.GET.f == 'new' %}selected{% endif %}>Novo</option>
+                        <option value="pending" {% if request.GET.f == 'pending' %}selected{% endif %}>Pendente</option>
+                        <option value="on_hold_scheduled" {% if request.GET.f == 'on_hold_scheduled' %}selected{% endif %}>Em espera (Agendado)</option>
+                        <option value="attempting_contact" {% if request.GET.f == 'attempting_contact' %}selected{% endif %}>Tentativa de Contato</option>
+                        <option value="in_contact" {% if request.GET.f == 'in_contact' %}selected{% endif %}>Em Contato</option>
+                        <option value="qualified" {% if request.GET.f == 'qualified' %}selected{% endif %}>Qualificado</option>
+                        <option value="development" {% if request.GET.f == 'development' %}selected{% endif %}>Desenvolvimento / Prova</option>
+                        <option value="proposal_sent" {% if request.GET.f == 'proposal_sent' %}selected{% endif %}>Proposta Enviada</option>
+                        <option value="closed" {% if request.GET.f == 'closed' %}selected{% endif %}>Fechado (Cliente)</option>
+                        <option value="unqualified" {% if request.GET.f == 'unqualified' %}selected{% endif %}>Desqualificado</option>
+                    </select>
+
+                    <input
+                        type="text"
+                        name="q"
+                        class="form-control flex-grow-1 border-dark"
+                        placeholder="Busque pelo nome da empresa, contato ou nicho..."
+                        value="{{ request.GET.q }}">
+                    
+                    <button type="submit" class="btn btn-dark">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    
+                    {% if request.GET.q or request.GET.f %}
+                        <a href="{% url "customers:lead_list" %}" class="btn btn-outline-dark">Limpar</a>
+                    {% endif %}
+                </form>
+            </div>
+            
+            <div class="col-lg-3 col-md-12 text-lg-end order-md-1 order-lg-2">
+                <a
+                    href="{% url "customers:lead_create" %}"
+                    class="btn btn-dark w-100 w-lg-auto">
+                    <i class="bi bi-plus-circle me-1"></i> Novo Lead
+                </a>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle border-top border-dark">
+                <thead class="table-light">
+                    <tr>
+                        <th class="border-bottom border-dark">Empresa/Contato</th>
+                        <th class="border-bottom border-dark">Nicho</th>
+                        <th class="border-bottom border-dark">Links</th>
+                        <th class="text-center border-bottom border-dark">Status</th>
+                        <th class="text-center border-bottom border-dark">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lead in leads %}
+                        <tr>
+                            <td>
+                                <a href="{% url "customers:lead_detail" pk=lead.pk %}" class="text-dark fw-bold text-decoration-none">
+                                    {{ lead.company_name }}
+                                </a>
+                                {% if lead.contact_name %}
+                                    <small class="d-block text-muted">({{ lead.contact_name }})</small>
+                                {% endif %}
+                            </td>
+                            <td>{{ lead.niche }}</td>
+                            <td>
+                                {% if lead.phone_number and lead.has_whatsapp %}
+                                    <a href="https://wa.me/{{ lead.phone_number }}" target="_blank" class="text-decoration-none">
+                                        <i class="bi bi-whatsapp text-success" title="Tem WhatsApp"></i>
+                                    </a>
+                                {% endif %}
+                                {% if lead.website_link %}
+                                    <a href="{{ lead.website_link }}" target="_blank" class="text-decoration-none">
+                                        <i class="bi bi-globe text-info" title="Tem Website"></i>
+                                    </a>
+                                {% endif %}
+                                {% if lead.observations %}
+                                    <i class="bi bi-chat-left-dots text-secondary" title="{{ lead.observations }}"></i>
+                                {% endif %}
+                                {% if lead.contact_status == 'on_hold_scheduled' and lead.return_date %}
+                                    <i class="bi bi-calendar-date text-secondary" title="{{ lead.return_date }}"></i>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <span class="badge rounded-pill 
+                                    {% if lead.contact_status == 'closed' %}bg-success
+                                    {% elif lead.contact_status == 'proposal_sent' %}bg-info
+                                    {% elif lead.contact_status == 'unqualified' %}bg-secondary
+                                    {% elif lead.contact_status == 'new' %}bg-dark  {% else %}bg-warning text-dark
+                                    {% endif %}">
+                                    {{ lead.get_contact_status_display }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="dropdown dropstart">
+                                    <button
+                                        class="btn btn-sm btn-outline-dark border-0" 
+                                        type="button" 
+                                        data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" href="{% url "customers:lead_detail" pk=lead.pk %}">
+                                                <i class="bi bi-eye me-2"></i> Ver Detalhes
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{% url "customers:lead_update" pk=lead.pk %}">
+                                                <i class="bi bi-pencil me-2"></i> Editar
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item text-danger" href="{% url "customers:lead_delete" pk=lead.pk %}">
+                                                <i class="bi bi-trash me-2"></i> Excluir
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td class="text-center text-muted py-4" colspan="6">
+                                Nenhum lead encontrado com o filtro aplicado.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% include "partials/pagination.html" %}
     </div>
 
 {% endblock content %}
